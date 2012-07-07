@@ -48,7 +48,7 @@ namespace Castle.ActiveRecord.Framework
 		/// </summary>
 		public static IOrderedQueryable<T> AsQueryable<T>(this ISession session)
 		{
-			return new NhQueryable<T>((ISessionImplementor) session);
+			return new NhQueryable<T>((ISessionImplementor) session.GetSessionImplementation());
 		}
 
 		/// <summary>

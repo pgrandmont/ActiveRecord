@@ -15,6 +15,7 @@
 namespace Castle.ActiveRecord.Tests
 {
 	using System;
+	using System.Linq;
 	using Castle.ActiveRecord;
 	using Castle.ActiveRecord.Framework;
 	using Castle.ActiveRecord.Framework.Config;
@@ -84,7 +85,7 @@ Please check the stacktrace and change your code accordingly.", ex.Message);
 			using (new StatelessSessionScope())
 			{
 				Assert.IsTrue(ActiveRecordMediator<Ship>.Exists(1));
-				Assert.AreEqual("Andrea Doria",ActiveRecordMediator<Ship>.FindByPrimaryKey(1).Name);
+				Assert.AreEqual("Andrea Doria", ActiveRecordMediator<Ship>.FindByPrimaryKey(1).Name);
 			}
 		}
 
@@ -120,9 +121,9 @@ Please check the stacktrace and change your code accordingly.", ex.Message);
 					Blog.Find(1);
 					Assert.Fail();
 				}
-				catch(ActiveRecordException ex)
+				catch (ActiveRecordException ex)
 				{
-					Assert.AreEqual(typeof(SessionException),ex.InnerException.GetType());
+					Assert.AreEqual(typeof(SessionException), ex.InnerException.GetType());
 					Assert.AreEqual("collections cannot be fetched by a stateless session", ex.InnerException.Message);
 				}
 			}
@@ -212,7 +213,7 @@ Please check the stacktrace and change your code accordingly.", ex.Message);
 
 				for (int i = 0; i < 10; i++)
 				{
-					var post = new Post() { Title = "Post" + i, Created = DateTime.Now};
+					var post = new Post() { Title = "Post" + i, Created = DateTime.Now };
 					post.Create();
 					blog.Posts.Add(post);
 				}
@@ -248,6 +249,18 @@ Please check the stacktrace and change your code accordingly.", ex.Message);
 			using (new StatelessSessionScope())
 				Assert.AreEqual(1, query.Execute().Length);
 
+		}
+		[Test]
+		public void Querying_works_with_Linq()
+		{
+			InitializeLazy();
+			using (new SessionScope())
+				CreateLazyBlog();
+
+			using (new StatelessSessionScope())
+			{
+				Assert.AreEqual("Mort", ActiveRecordLinq.AsQueryable<BlogLazy>().First().Author);
+			}
 		}
 
 		[Test]
